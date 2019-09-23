@@ -54,7 +54,7 @@ void DollarAmount::printMean(int size){
     cout << "the mean is "<< mean <<endl;
 }
 //void DollarAmount::copyPointer
-
+//DECIMAL CHECK OF INPUT
 bool decimalCheck(string input)
 {
     //check decimal character ammount and placement
@@ -85,10 +85,10 @@ bool decimalCheck(string input)
     else if(decCount >= 2){
         cout << "Too many decimals, Invalid Format! try again!!" << endl;
     }
-    else
+
         return true;
 }
-
+//CHARACTER SIZE CHECK OF INPUT
 bool sizeCheck(string input)
 {
     if (input.size() < 4 && input.size() > 7)
@@ -100,12 +100,40 @@ bool sizeCheck(string input)
         return true;
 }
 
+bool nonNumericCheck(string input){
+    const int myCharsSize = 26;
+    const int specialCharsSize = 24;
+    
+    char myChars[myCharsSize] = {'a', 'b', 'c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'};
+    char specialChars[specialCharsSize] = {'~','!','@','#','$','%','^','&','*','(',')','_','+','-','=','<','>','?','{','}','"',',',':',';'};
+    for(int i=0; i<input.size(); i++){
+        for(int j=0; j<myCharsSize; j++){
+        if (input[i] == myChars[j]){
+            cout<<"you have alphabetic characters in your ammount, Try Again!!!"<<endl;
+            return 0;
+        }
+        }
+    }
+    for(int i=0; i<input.size(); i++){
+        for(int j=0; j<specialCharsSize; j++){
+        if (input[i] == specialChars[j]){
+            cout<<"you have special alphabetic characters in your ammount, Try Again!!!"<<endl;
+            return 0;
+        }
+        }
+    }
+    return true;
+}
+//NON CLASS FUNCTION TO CHECK INPUT
 double checkChars(string input)
 {
     if (sizeCheck(input) == 0)
         return 0;
     //count decimals
     else if (decimalCheck(input) == 0)
+        return 0;
+
+    else if(nonNumericCheck(input) == 0)
         return 0;
 
     //check for all invalid characters
@@ -137,4 +165,3 @@ double checkChars(string input)
 }
 
 
- 

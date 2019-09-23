@@ -15,9 +15,6 @@ int main()
     for (int i = 0; i < size; i++)
     {
         sizeFlag = size - 1;
-        cout << "WELCOME!" << endl;
-        cout << "Please enter an ammount less than $10000.00 and larger than 0.00" << endl;
-        cout << "Make sure to include the dollar ammount and cent ammount even if it is 0, for example $25.01" << endl;
         bool verified = false;
         while(verified == false){
         cout << "Enter the expenditure record (ex: 2.54, 1055.79 : )" << endl;
