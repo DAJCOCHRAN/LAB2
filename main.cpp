@@ -1,8 +1,5 @@
 #include "header.h"
 
-
-//INITIAL POINTER ASSIGNMENT TO BE GIVEN
-
 int main()
 {
     //expendRecord();
