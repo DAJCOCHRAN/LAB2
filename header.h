@@ -6,38 +6,74 @@ using namespace std;
 class DollarAmount
 {
 private:
-    double *listAmount;
+    string *input;
+    string *listAmount;
+    string *listAmountCopy;
+    double *calcAmount;
     double sum;
     double mean;
 
 public:
     DollarAmount(int size);
+    DollarAmount(const DollarAmount & da, int position);
     ~DollarAmount();
-    void allocateInput(double input, int position);
+    void allocateInput(int position, int size);
     void printPoint(int size);
-    void reInitPtr(int size);
     void printMean(int size);
-};
+    //restructure where input is with direct pointer
 
+    string iO_Pointer();
+
+    friend class SpendingRecord;
+};
 //CONSTRUCTOR
 DollarAmount::DollarAmount(int size)
 {
     sum = 0.00;
     mean = 0.00;
-    listAmount = new double[size];
+    input = new string[1];
+    listAmount = new string[size];
+    listAmountCopy = new string[size];
 }
 
 //DECONSTRUCTOR
 DollarAmount::~DollarAmount()
 {
-    cout << "deconstructor is called" << endl;
+    //cout << "deconstructor is called" << endl;
     delete[] listAmount;
+    delete[] input;
+    delete[] calcAmount;
+}
+
+string DollarAmount::iO_Pointer(){
+    cout << "Enter the expenditure record (ex: 2.54, 1055.79 : -1 to exit )";
+            cin >> input[0];
+            return input[0];
 }
 
 //PLACE VALUES IN POINTER
-void DollarAmount::allocateInput(double input, int position)
+void DollarAmount::allocateInput(int position, int size)
 {
-    listAmount[position] = input;
+
+    listAmount[position] = input[0];
+    //copy list Amount to listAmountCopy
+    for(int i=0; i<=position; i++){
+        listAmountCopy[i] = listAmount[i];
+    }
+    //done with listAmount since input stored in copy
+    delete[] listAmount;
+    listAmount = nullptr;
+    //create new dynamic list amount
+    int newSize = size + 1;
+    listAmount = new string[newSize];
+    //reallocate memory back to listAmount
+    for(int i=0; i<=position; i++){
+        listAmount[i] = listAmountCopy[i];
+    }
+    //done with copyPointer, safe to delete and increase size for next allocation round
+    delete []listAmountCopy;
+    listAmountCopy = nullptr;
+    listAmountCopy = new string[newSize];
 }
 
 //PRINT POINTER
@@ -47,22 +83,96 @@ void DollarAmount::printPoint(int size)
         cout << listAmount[i] << endl;
 }
 
-//RE-INITIALIZE POINTER SIZE
-void DollarAmount::reInitPtr(int size)
-{
-    listAmount = new double[size];
-}
-
+//PRINT THE MEAN FROM THE FINAL RESULT POINTER
 void DollarAmount::printMean(int size)
 {
-    for (int i = 0; i < size; i++)
-    {
-        sum += listAmount[i];
+    size--;
+    calcAmount = new double[size];
+    for(int i = 0; i<size; i++){
+        if(size == 1){
+            calcAmount[0] = atof(listAmount[0].c_str());
+            break;
+        }
+        calcAmount[i] =  atof(listAmount[i].c_str());}
+    
+    for (int i = 0; i < size; i++){
+        if(size == 1){
+            sum = calcAmount[0];
+            break;
+        }
+        sum += calcAmount[i];
     }
+    
     mean = sum / size;
     cout << "the mean is " << mean << endl;
 }
-//END OF CLASS FUNCTIONS
+//START OF FRIEND CLASS AND CLASS MEMBERS============================================================================================================
+class SpendingRecord{
+    
+    private:
+        string *expendInput;
+        string *listRecord;
+        string *listCombined;
+
+    public:
+    SpendingRecord(int size);
+    ~SpendingRecord();
+    void iO_Pointer();
+    void allocateStringInput(string input, int position);
+    void reInitStringPtr(int size);
+    //void printFinalRecord();
+    void combineBothInputs(const DollarAmount &, int size);
+    void printPoint(int size);
+};
+
+SpendingRecord::SpendingRecord(int size){
+    listRecord = new string[size];
+    listCombined = new string[size];
+    expendInput = new string[1];
+}
+
+SpendingRecord::~SpendingRecord()
+{
+    delete[] listRecord;
+    delete[] listCombined;
+    delete[] expendInput;
+}
+
+void SpendingRecord::iO_Pointer(){
+    cout<< "the expenditure?";
+    cin >> expendInput[0];
+    cout << endl;
+}
+//ALOCATE INPUT TO STRING, DO WE NEEED DOUBLE TO STRING CONVERSION?
+void SpendingRecord::allocateStringInput(string input, int position)
+{
+    listRecord[position] = input;
+    cout << "listRecord contents: "<<listRecord[position] << " at position " << position << endl;
+}
+
+//RE-INITIALIZE STRING POINTER SIZE
+void SpendingRecord::reInitStringPtr(int size)
+{
+    listRecord = new string[size];
+    cout << "list Record has new size of " << size << endl;
+}
+
+void SpendingRecord::combineBothInputs(const DollarAmount & da, int finalSize){
+    listCombined = new string[finalSize];
+    for(int i=0; i<finalSize; i++){
+        //convert double value of list Amount to string
+        //store string in spending record
+    }
+}
+
+void SpendingRecord::printPoint(int size)
+{
+    for (int i = 0; i < size; i++)
+        cout << listRecord[i] << endl;
+}
+
+
+//END OF CLASSES AND CLASS FUNCTIONS
 //==============================================================================================================================================//
 //BEGINING OF NON-CLASS MEMBER FUNCTIONS
 //DECIMAL CHECK OF INPUT
@@ -176,7 +286,11 @@ double checkChars(string input)
     double verifiedNum = atof(verifiedChar.c_str());
     double inputNum = atof(input.c_str());
     //special characters after the number will still go through
-
+    if (inputNum < 0.00 || inputNum >= 10000.00)
+    {
+        cout << "your ammount must be between $10000.00 and $0.00" << endl;
+        return 0;
+    }
     if (verifiedNum == inputNum)
     {
         return verifiedNum;

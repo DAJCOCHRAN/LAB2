@@ -2,41 +2,39 @@
 
 int main()
 {
-    //expendRecord();
-    double inputNum = 0;
-    string input = " ";
-    int size = 5;
-    int sizeFlag = 0;
-    DollarAmount a(size);
-    DollarAmount b(size);
+    double inputNum = 0.00;
+    string input = "";
+    string inputTwo = ""; //useless but needed 
+    int size = 1;
+    DollarAmount a(size);             //INITIAL AND FINAL OBJECT USAGE             //STORING OBJECT TO STORE A
+   SpendingRecord r(size); //uses friend functions
+    //SpendingRecord copyRecord(size);
+    cout << "Welcome to the expenditure program" << endl;
+    cout << "The amount should be between $0.00 and $10000.00 in the exact format" << endl;
     for (int i = 0; i < size; i++)
     {
-        sizeFlag = size - 1;
-        bool verified = false;
-        while(verified == false){
-        cout << "Enter the expenditure record (ex: 2.54, 1055.79 : )" << endl;
-        cin >> input;
-        cout << " " << endl;
-        //try catch for input validation
-        inputNum = checkChars(input);
-        if(inputNum > 0 && inputNum<10000.00) verified = true;
-        else cout<<"your ammount must be between $10000.00 and $0.00"<<endl;
-        }
-        a.allocateInput(inputNum, i);
-        b = a;
-        size = size++;
-        a.reInitPtr(size);
-        a = b;
-        b.reInitPtr(size);
-
-        if (i == 4)
+        while (true) //LOOP FOR CHECKING INPUT
         {
+            input = a.iO_Pointer();
+            
+            if (input == "-1")
+                break;
+            inputNum = checkChars(input);
+            if (inputNum != 0)
+                break;
+        }
+        //once validated...
+        if(input == "-1")
             break;
-        }
-        }
+        a.allocateInput(i, size); 
+        size++;
+    }
     cout << "this is the list of all entered ammounts" << endl;
     a.printPoint(size);
-    a.printMean(size);
 
+
+    
+    a.printMean(size);
+    //inputRecord.printPoint(size);
     return 0;
 }
