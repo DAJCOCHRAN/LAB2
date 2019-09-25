@@ -1,31 +1,5 @@
-#include <iostream>
-#include <string>
-#include <math.h>
-using namespace std;
+#include"class.h"
 
-class DollarAmount
-{
-private:
-    string *input;
-    string *listAmount;
-    string *listAmountCopy;
-    double *calcAmount;
-    double sum;
-    double mean;
-
-public:
-    DollarAmount(int size);
-    DollarAmount(const DollarAmount & da, int position);
-    ~DollarAmount();
-    void allocateInput(int position, int size);
-    void printPoint(int size);
-    void printMean(int size);
-    //restructure where input is with direct pointer
-
-    string iO_Pointer();
-
-    friend class SpendingRecord;
-};
 //CONSTRUCTOR
 DollarAmount::DollarAmount(int size)
 {
@@ -46,8 +20,10 @@ DollarAmount::~DollarAmount()
 }
 
 string DollarAmount::iO_Pointer(){
-    cout << "Enter the expenditure record (ex: 2.54, 1055.79 : -1 to exit )";
+    cout << "Please enter the expenditure amount (ex: 2.54, 1055.79 : -1 to exit )";
             cin >> input[0];
+            if(input[0] == "-1")
+            return "-1";
             return input[0];
 }
 
@@ -106,27 +82,11 @@ void DollarAmount::printMean(int size)
     mean = sum / size;
     cout << "the mean is " << mean << endl;
 }
+
 //START OF FRIEND CLASS AND CLASS MEMBERS============================================================================================================
-class SpendingRecord{
-    
-    private:
-        string *expendInput;
-        string *listRecord;
-        string *listCombined;
-
-    public:
-    SpendingRecord(int size);
-    ~SpendingRecord();
-    void iO_Pointer();
-    void allocateStringInput(string input, int position);
-    void reInitStringPtr(int size);
-    //void printFinalRecord();
-    void combineBothInputs(const DollarAmount &, int size);
-    void printPoint(int size);
-};
-
 SpendingRecord::SpendingRecord(int size){
     listRecord = new string[size];
+    listRecordCopy = new string[size];
     listCombined = new string[size];
     expendInput = new string[1];
 }
@@ -134,35 +94,60 @@ SpendingRecord::SpendingRecord(int size){
 SpendingRecord::~SpendingRecord()
 {
     delete[] listRecord;
+    delete[] listRecordCopy;
     delete[] listCombined;
     delete[] expendInput;
 }
 
 void SpendingRecord::iO_Pointer(){
-    cout<< "the expenditure?";
+    cout<< "what is the expenditure for this amount?";
     cin >> expendInput[0];
     cout << endl;
 }
 //ALOCATE INPUT TO STRING, DO WE NEEED DOUBLE TO STRING CONVERSION?
-void SpendingRecord::allocateStringInput(string input, int position)
+void SpendingRecord::allocateExpend(int position, int size)
 {
-    listRecord[position] = input;
-    cout << "listRecord contents: "<<listRecord[position] << " at position " << position << endl;
+    listRecord[position] = expendInput[0];
+    for(int i=0; i<=position; i++){
+        listRecordCopy[i] = listRecord[i];
+    }
+    //we can delete list Record since contents stored in copy
+    delete [] listRecord;
+    listRecord = nullptr;
+    //increase size for new array of pointers
+    int newSize = size + 1;
+    listRecord = new string[newSize];
+    //copy the copy back into the new sized list
+    for(int i=0; i<size; i++){
+        listRecord[i] = listRecordCopy[i];
+    }
+    //now we can delete the listRecordCopy and increase size for next round
+    delete[] listRecordCopy;
+    listRecordCopy = nullptr;
+
+    listRecordCopy = new string[newSize];
 }
 
-//RE-INITIALIZE STRING POINTER SIZE
-void SpendingRecord::reInitStringPtr(int size)
-{
-    listRecord = new string[size];
-    cout << "list Record has new size of " << size << endl;
+void SpendingRecord::printExpend(int size){
+    cout << "The list of expenditures is below..." << endl;
+    for(int i=0; i<size; i++){
+        cout << listRecord[i] << endl;
+    }
 }
+
 
 void SpendingRecord::combineBothInputs(const DollarAmount & da, int finalSize){
     listCombined = new string[finalSize];
     for(int i=0; i<finalSize; i++){
-        //convert double value of list Amount to string
-        //store string in spending record
+        //we first want to load all numeric amounts
+        listCombined[i] = da.listAmount[i];
     }
+    //now we want to append the expenditure amount and print the amount
+    cout << "the combined list is below..." << endl;
+    for (int i=0; i<finalSize; i++){
+        listCombined[i].append(" " + listRecord[i]);
+        cout << listCombined[i] << endl;
+    }    
 }
 
 void SpendingRecord::printPoint(int size)
@@ -173,9 +158,7 @@ void SpendingRecord::printPoint(int size)
 
 
 //END OF CLASSES AND CLASS FUNCTIONS
-//==============================================================================================================================================//
-//BEGINING OF NON-CLASS MEMBER FUNCTIONS
-//DECIMAL CHECK OF INPUT
+
 bool decimalCheck(string input)
 {
     //check decimal character ammount and placement
@@ -208,6 +191,7 @@ bool decimalCheck(string input)
     else if (decCount >= 2)
     {
         cout << "Too many decimals, Invalid Format! try again!!" << endl;
+        return false;
     }
 
     return true;
@@ -298,3 +282,6 @@ double checkChars(string input)
     else
         return 0;
 }
+
+
+
